@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import { test, expect } from '@playwright/test';
 
 // 🔹 Test 1
@@ -10,14 +8,15 @@ test('logowanie i widok kont', async ({ page }) => {
   await page.getByTestId('password-input').fill('zxcvbnm,');
   await page.getByTestId('login-button').click();
 
-  await expect(page.getByRole('heading', { name: 'konta osobiste' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'konta osobiste' })
+  ).toBeVisible();
 });
-
 
 // 🔹 Test 2
 test('wykonanie przelewu', async ({ page }) => {
   await page.goto('https://demo-bank.vercel.app/');
-git push origin studiowiatrak
+
   await page.getByTestId('login-input').fill('qwertyui');
   await page.getByTestId('password-input').fill('Terg1234');
   await page.getByTestId('login-button').click();
@@ -31,12 +30,29 @@ git push origin studiowiatrak
 
   await page.getByRole('button', { name: 'wykonaj' }).click();
 
-  // sprawdzamy czy pojawił się modal / przycisk
   await expect(page.getByTestId('close-button')).toBeVisible();
 
   await page.getByTestId('close-button').click();
 
-  // opcjonalnie: sprawdzamy że zniknął
   await expect(page.getByTestId('close-button')).toBeHidden();
 });
->>>>>>> 3d94d6a (dodanie testów playwright)
+
+// 🔹 Test 3
+test('przelew', async ({ page }) => {
+  await page.goto('https://demo-bank.vercel.app/');
+  await page.getByTestId('login-input').click();
+  await page.getByTestId('login-input').fill('qwertyui');
+  await page.getByTestId('password-input').click();
+  await page.getByTestId('password-input').fill('zxcvbvnm');
+  await page.getByTestId('login-button').click();
+
+  await page.getByRole('link', { name: 'doładowanie telefonu' }).click();
+  await page.waitForTimeout(1000);
+  await page.locator('#widget_1_topup_receiver').selectOption('504 xxx xxx');
+  await page.waitForTimeout(1000);
+  await page.locator('#widget_1_topup_amount').selectOption('100');
+  await page.locator('#uniform-widget_1_topup_agreement > span').click();
+  await page.getByRole('button', { name: 'doładuj telefon' }).click();
+
+  await expect(page.getByRole('paragraph')).toMatchAriaSnapshot(`- paragraph: "/Doładowanie wykonane! Kwota: 100PLN Numer: \\\\d+ xxx xxx/"`);
+});
