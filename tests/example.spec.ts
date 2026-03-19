@@ -84,7 +84,6 @@ test('personal account', async ({ page }) => {
   await page.waitForTimeout(1000);
   await page.getByRole('link', { name: 'konta osobiste' }).click();
   await page.getByText('więcej').click();
-  await page.getByText('więcej').click();
   await expect(page.getByText('10 000')).toBeVisible();
 });
 //Test 6 - empty payment standard/express/click cancel
@@ -121,4 +120,45 @@ test('test', async ({ page }) => {
   await page.getByRole('link', { name: 'Pobierz jako zip' }).click();
   const download1 = await download1Promise;
   await expect(page.getByRole('link', { name: 'Pobierz jako zip' })).toBeVisible();
+});
+
+
+test('platnosci', async ({ page }) => {
+  await page.goto('https://demo-bank.vercel.app/');
+  await page.getByTestId('login-input').click();
+  await page.getByTestId('login-input').fill('testowca');
+  await page.getByTestId('password-input').click();
+  await page.getByTestId('password-input').fill('qwertyui');
+  await page.getByTestId('login-button').click();
+  await page.getByRole('link', { name: 'płatności' }).click();
+  await page.locator('#form_show_receivers').click();
+  await page.getByTestId('transfer_receiver').click();
+  await page.getByTestId('transfer_receiver').fill('ODBIORCA PRZELEWU ŻÓŁĆ');
+  await page.getByTestId('form_account_to').click();
+  await page.getByTestId('form_account_to').fill('42 4594 6543 5795 4765 4985 49547');
+  await page.locator('.i-show').first().click();
+  await page.getByRole('textbox', { name: 'ulica i numer domu /' }).click();
+  await page.getByRole('textbox', { name: 'ulica i numer domu /' }).fill('Będzińska');
+  await page.getByRole('textbox', { name: 'ulica i numer domu /' }).press('Tab');
+  await page.getByRole('textbox', { name: 'kod pocztowy, miejscowość' }).fill('78-987');
+  await page.getByRole('textbox', { name: 'kod pocztowy, miejscowość' }).press('Tab');
+  await page.getByRole('textbox', { name: 'adres - trzecia linia' }).fill('Adres trzecia linia');
+  await page.getByRole('textbox', { name: 'adres - trzecia linia' }).press('Tab');
+  await page.getByTestId('form_amount').fill('2137');
+  await page.getByTestId('form_amount').press('Tab');
+  await page.getByTestId('form_title').fill('Tytuł przelew');
+  await page.locator('.i-calendar').click();
+  await page.getByRole('link', { name: '19' }).click();
+  await page.getByRole('radio', { name: 'ekspresowy' }).check();
+  await page.locator('#uniform-form_is_email > span').click();
+  await page.locator('#form_email').click();
+  await page.locator('#form_email').fill('testowca@owca.pl');
+  await page.locator('#uniform-form_add_receiver > span').click();
+  await page.getByRole('checkbox', { name: 'jako zaufanego' }).check();
+  await page.getByText('5,00').click();
+  await expect(page.getByText('5,00 PLN')).toBeVisible();
+  await page.getByRole('button', { name: 'wykonaj przelew' }).click();
+  await expect(page.getByText('Przelew wykonany', { exact: true })).toBeVisible();
+  await expect(page.getByRole('paragraph')).toMatchAriaSnapshot(`- paragraph: "/Przelew wykonany! Odbiorca: ODBIORCA PRZELEWU ŻÓŁĆ Kwota: \\\\d+,00PLN Nazwa: Tytuł przelew/"`);
+  await page.getByTestId('close-button').click();
 });
