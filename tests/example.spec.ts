@@ -164,3 +164,63 @@ test('platnosci', async ({ page }) => {
   await expect(page.getByRole('paragraph')).toMatchAriaSnapshot(`- paragraph: "/Przelew wykonany! Odbiorca: ODBIORCA PRZELEWU ŻÓŁĆ Kwota: \\\\d+,00PLN Nazwa: Tytuł przelew/"`);
   await page.getByTestId('close-button').click();
 });
+
+test('iframe', async ({ page }) => {
+  await page.goto('https://demo-bank.vercel.app/');
+  await page.getByTestId('login-input').click();
+  await page.getByTestId('login-input').fill('qwertyui');
+  await page.getByTestId('password-input').click();
+  await page.getByTestId('password-input').fill('asdfghjk');
+  await page.getByTestId('login-button').click();
+  await page.getByRole('link', { name: 'raporty (iframe)' }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByText('Sorry your browser does not').contentFrame().getByRole('link', { name: 'Pobierz jako txt' }).click();
+  const download = await downloadPromise;
+  const download1Promise = page.waitForEvent('download');
+  await page.getByText('Sorry your browser does not').contentFrame().getByRole('link', { name: 'Pobierz jako zip' }).click();
+  const download1 = await download1Promise;
+  await page.getByText('Sorry your browser does not').contentFrame().getByRole('heading', { name: 'Prześlij plik txt' }).click();
+});
+
+
+
+test('generuj przelew', async ({ page }) => {
+  await page.goto('https://demo-bank.vercel.app/');
+  await page.getByTestId('login-input').click();
+  await page.getByTestId('login-input').fill('qwertyui');
+  await page.getByTestId('password-input').click();
+  await page.getByTestId('password-input').fill('asdfghjk');
+  await page.getByTestId('login-button').click();
+  await page.getByRole('link', { name: 'generuj przelew' }).click();
+  await page.locator('#form_account_from').selectOption('[KO] konto na życie [13 159,20 PLN] 4141...0000');
+  await page.getByTestId('transfer_receiver').click();
+  await page.getByTestId('transfer_receiver').fill('Michał Tester');
+  await page.getByTestId('form_account_to').click();
+  await page.getByTestId('form_account_to').fill('42 8165 4651 5643 5432 4654 65466');
+  await page.locator('.i-show').first().click();
+  await page.getByRole('textbox', { name: 'ulica i numer domu /' }).click();
+  await page.getByRole('textbox', { name: 'ulica i numer domu /' }).fill('Kolejowa 55');
+  await page.getByRole('textbox', { name: 'kod pocztowy, miejscowość' }).click();
+  await page.getByRole('textbox', { name: 'kod pocztowy, miejscowość' }).fill('42-849');
+  await page.getByRole('textbox', { name: 'adres - trzecia linia' }).click();
+  await page.getByRole('textbox', { name: 'adres - trzecia linia' }).fill('Adres trzecia linia');
+  await page.getByTestId('form_amount').click();
+  await page.getByTestId('form_amount').fill('123');
+  await page.getByTestId('form_title').click();
+  await page.getByTestId('form_title').click();
+  await page.getByTestId('form_title').click();
+  await page.getByTestId('form_title').click();
+  await page.getByTestId('form_title').fill('Tytuł');
+  await page.locator('#form_date').click();
+  await page.getByRole('link', { name: '30' }).click();
+  await page.locator('#uniform-form_is_email > span').click();
+  await page.locator('#form_email').click();
+  await page.locator('#form_email').fill('test@test.pl');
+  await page.locator('#uniform-form_add_receiver > span').click();
+  await page.getByRole('checkbox', { name: 'jako zaufanego' }).check();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByText('Pobierz jako txt').click();
+  const download = await downloadPromise;
+
+
+});
