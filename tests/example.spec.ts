@@ -22,6 +22,7 @@ test('wykonanie przelewu', async ({ page }) => {
   await page.getByTestId('login-button').click();
   await page.waitForTimeout(1000);
   await page.getByRole('link', { name: 'mój pulpit' }).click();
+  await page.waitForTimeout(1000);
   await page.getByRole('link', { name: 'szybki przelew' }).click();
 
   await page.locator('#widget_1_transfer_receiver').selectOption('1');
@@ -124,7 +125,7 @@ test('test', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Pobierz jako zip' })).toBeVisible();
 });
 
-
+//test 8
 test('platnosci', async ({ page }) => {
   await page.goto('https://demo-bank.vercel.app/');
   await page.getByTestId('login-input').click();
@@ -150,7 +151,7 @@ test('platnosci', async ({ page }) => {
   await page.getByTestId('form_amount').press('Tab');
   await page.getByTestId('form_title').fill('Tytuł przelew');
   await page.locator('.i-calendar').click();
-  await page.getByRole('link', { name: '20' }).click();
+  await page.getByRole('link', { name: '23' }).press('Enter');
   await page.getByRole('radio', { name: 'ekspresowy' }).check();
   await page.locator('#uniform-form_is_email > span').click();
   await page.locator('#form_email').click();
@@ -164,7 +165,7 @@ test('platnosci', async ({ page }) => {
   await expect(page.getByRole('paragraph')).toMatchAriaSnapshot(`- paragraph: "/Przelew wykonany! Odbiorca: ODBIORCA PRZELEWU ŻÓŁĆ Kwota: \\\\d+,00PLN Nazwa: Tytuł przelew/"`);
   await page.getByTestId('close-button').click();
 });
-
+//test 9
 test('iframe', async ({ page }) => {
   await page.goto('https://demo-bank.vercel.app/');
   await page.getByTestId('login-input').click();
@@ -183,7 +184,7 @@ test('iframe', async ({ page }) => {
 });
 
 
-
+// test 10
 test('generuj przelew', async ({ page }) => {
   await page.goto('https://demo-bank.vercel.app/');
   await page.getByTestId('login-input').click();
@@ -221,6 +222,30 @@ test('generuj przelew', async ({ page }) => {
   const downloadPromise = page.waitForEvent('download');
   await page.getByText('Pobierz jako txt').click();
   const download = await downloadPromise;
+  });
+//test 11 graphs
 
+test('check graphs', async ({ page }) => {
+  await page.goto('https://demo-bank.vercel.app/');
+  await page.getByTestId('login-input').click();
+  await page.getByTestId('login-input').fill('michalek');
+  await page.getByTestId('password-input').click();
+  await page.getByTestId('password-input').fill('23333333');
+  await page.getByTestId('login-button').click();
+  await page.getByRole('link', { name: 'wykresy' }).click();
+  await page.waitForTimeout(1000);
+  await page.locator('path').first().click();
+});
+//test 12 ustawienia
 
+test('settings', async ({ page }) => {
+  await page.goto('https://demo-bank.vercel.app/');
+  await page.getByTestId('login-input').click();
+  await page.getByTestId('login-input').fill('michalek');
+  await page.getByTestId('login-input').press('Tab');
+  await page.getByRole('link', { name: 'Demobank w sam raz do testów' }).press('Tab');
+  await page.getByTestId('password-input').fill('weweewee');
+  await page.getByTestId('login-button').click();
+  await page.getByRole('link', { name: 'ustawienia' }).click();
+  await expect(page.getByText('Zapraszamy za jakiś czas...')).toBeVisible();
 });
