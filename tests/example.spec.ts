@@ -157,4 +157,25 @@ test.describe('Scenariusze po zalogowaniu', () => {
     await goTo(page, 'ustawienia');
     await expect(page.getByText('Zapraszamy za jakiś czas...')).toBeVisible();
   });
+
+
+
+  test('raporty wgranie pliku', async ({ page }) => {
+    await page.goto('https://demo-bank.vercel.app/');
+    await page.getByTestId('login-input').click();
+    await page.getByTestId('login-input').fill('estestes');
+    await page.getByTestId('password-input').click();
+    await page.getByTestId('password-input').fill('23123123');
+    await page.getByTestId('login-button').click();
+    await page.getByRole('link', { name: 'raporty', exact: true }).click();
+   // await page.locator('#my_file_1').click();
+    await page.locator('#my_file_1').setInputFiles('C:/Users/x16mi/OneDrive/Dokumenty/testowydokument.txt');
+    await expect(page.getByText('testowydokument.txt')).toBeVisible();
+  });
+
+
+
+
 });
+
+
