@@ -169,8 +169,8 @@ test.describe('Scenariusze po zalogowaniu', () => {
     await page.getByTestId('login-button').click();
     await page.getByRole('link', { name: 'raporty', exact: true }).click();
    // await page.locator('#my_file_1').click();
-    await page.locator('#my_file_1').setInputFiles('C:/Users/x16mi/OneDrive/Dokumenty/testowydokument.txt');
-    await expect(page.getByText('testowydokument.txt')).toBeVisible();
+    await page.locator('#my_file_1').setInputFiles('C:/testy/pliktestowy.txt');
+    await expect(page.getByText('pliktestowy.txt')).toBeVisible();
   });
 
 
