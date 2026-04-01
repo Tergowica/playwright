@@ -158,9 +158,7 @@ test.describe('Scenariusze po zalogowaniu', () => {
     await expect(page.getByText('Zapraszamy za jakiś czas...')).toBeVisible();
   });
 
-
-
-  test('raporty wgranie pliku', async ({ page }) => {
+test('raporty wgranie pliku', async ({ page }) => {
     await page.goto('https://demo-bank.vercel.app/');
     await page.getByTestId('login-input').click();
     await page.getByTestId('login-input').fill('estestes');
@@ -172,8 +170,6 @@ test.describe('Scenariusze po zalogowaniu', () => {
     await page.locator('#my_file_1').setInputFiles('C:/testy/pliktestowy.txt');
     await expect(page.getByText('pliktestowy.txt')).toBeVisible();
   });
-
-
 
 
 });
