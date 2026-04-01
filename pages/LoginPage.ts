@@ -40,4 +40,4 @@ export class LoginPage {
     // Web-first assertions automatycznie czekają na pojawienie się elementu [7, 8]
     await expect(this.accountsHeading).toBeVisible();
   }
-}
+} //test
