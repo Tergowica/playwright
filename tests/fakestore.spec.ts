@@ -38,3 +38,17 @@ test('zakup produktu', async ({ page }) => {
   await page.getByRole('button', { name: 'Kupuję i płacę' }).click();
   await expect(page.getByText('Dziękujemy. Otrzymaliśmy')).toBeVisible();
 });
+
+test('remove product in bin', async ({ page }) =>
+{
+  await page.locator('#menu-item-198').getByRole('link', { name: 'Sklep' }).click();
+  await page.getByRole('link', { name: 'Przejdź do kategorii produktu Żeglarstwo' }).click();
+  await page.getByLabel('Zamówienie').first().selectOption('date');
+  await page.goto('https://fakestore.testelka.pl/product-category/zeglarstwo/?orderby=date');
+  await page.locator('a.add_to_cart_button').click();
+  await page.getByRole('button', { name: 'Dodaj do koszyka: „Kurs ż' }).click();
+  await page.getByTitle('Zobacz koszyk').waitFor({ state: 'attached' });
+  await page.locator('#menu-item-200').getByRole('link', { name: 'Koszyk' }).click();
+  await page.getByRole('button', { name: 'Usuń Kurs żeglarski na' }).click();
+  await expect(page.getByText('Twój koszyk jest pusty.')).toBeVisible();
+});
