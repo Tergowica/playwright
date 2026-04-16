@@ -52,3 +52,17 @@ test('remove product in bin', async ({ page }) =>
   await page.getByRole('button', { name: 'Usuń Kurs żeglarski na' }).click();
   await expect(page.getByText('Twój koszyk jest pusty.')).toBeVisible();
 });
+
+test('categories', async ({ page }) => {
+
+  await page.getByRole('button', { name: ' Ukryj' }).click();
+  await page.getByRole('link', { name: 'Przejdź do kategorii produktu Windsurfing' }).click();
+  await page.getByRole('link', { name: 'Egipt - El Gouna Egipt – El' }).click();
+  await page.locator('#woocommerce_product_categories-3').getByRole('link', { name: 'Windsurfing' }).click();
+  await page.getByRole('link', { name: 'Wspinaczka' }).click();
+  await page.getByRole('link', { name: 'Yoga i pilates' }).click();
+  await page.getByRole('link', { name: 'Żeglarstwo' }).click();
+  await page.getByText('(6)').click();
+  await expect(page.getByRole('link', { name: 'Windsurfing' })).toBeVisible();
+});
+
