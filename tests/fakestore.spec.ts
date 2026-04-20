@@ -53,97 +53,55 @@ test('remove product in bin', async ({ page }) =>
   await expect(page.getByText('Twój koszyk jest pusty.')).toBeVisible();
 });
 
+test('categories', async ({ page }) => {
 
-
-test('purchase with coupon', async ({ page }) => {
-
-
-
-  await page.locator('#menu-item-198').getByRole('link', { name: 'Sklep' }).click();
-  await page.getByRole('link', { name: 'Przejdź do kategorii produktu Yoga i pilates' }).click();
-  await page.getByRole('button', { name: 'Dodaj do koszyka: „Yoga i pilates w Portugalii”' }).click();
-    
-  //   const koszykLink = page.locator('a.added_to_cart');
-  // await expect(koszykLink).toBeVisible();
-  // await koszykLink.click();
-
-  await page.locator('a.added_to_cart').click();
-
-
-  await page.getByRole('textbox', { name: 'Kupon:' }).fill('kwotowy250');
-  await page.getByRole('button', { name: 'Zastosuj kupon' }).click();
-
-  await expect(page.getByText('Kupon został pomyślnie użyty.')).toBeVisible();
-
-
-  await page.getByRole('link', { name: 'Przejdź do płatności ' }).click();
-
-
-  await page.getByRole('textbox', { name: 'BLIK Code' }).click();
-  await page.getByRole('textbox', { name: 'BLIK Code' }).fill('111111');
-  await page.getByRole('checkbox', { name: 'Przeczytałem/am i akceptuję' }).check();
-  await page.getByRole('button', { name: 'Kupuję i płacę' }).click();
-
-
-  await expect(page.getByRole('heading', { name: 'Zamówienie otrzymane' })).toBeVisible();
-});
-
-
-
-
-
-
-
-test('zakres cen', async ({ page }) => {
-
-
-  await page.locator('#menu-item-198').getByRole('link', { name: 'Sklep' }).click();
+  await page.getByRole('button', { name: ' Ukryj' }).click();
   await page.getByRole('link', { name: 'Przejdź do kategorii produktu Windsurfing' }).click();
-
-  await page.locator('#min_price').evaluate((el, value) => {
-  (el as HTMLInputElement).value = value;
-}, '3400');
-
-await page.locator('#max_price').evaluate((el, value) => {
-  (el as HTMLInputElement).value = value;
-}, '3400');
-
-
-// powyższe kroki ustawiają wartości w polach zakresu cen, mimo że są one ukryte, a następnie klikają przycisk filtruj, aby zastosować te wartości
-
-
-
-//  await page.locator('#min_price').fill('3400', { force: true });
-//  await page.locator('#max_price').fill('3400', { force: true });
-
-// to wyżej nie jest krokiem wykonanym, bo elementy są ukryte, więc trzeba użyć JavaScriptu do ustawienia wartości, a następnie kliknąć przycisk filtruj, żeby zastosować te wartości
-
-
-  await page.getByRole('button', { name: 'Filtruj' }).click();
-
-
-
-  await page.getByRole('button', { name: 'Dodaj do koszyka: „Egipt - El' }).click();
-
-
-  await page.locator('a.added_to_cart').click();
-
-
-  await page.getByRole('link', { name: 'Przejdź do płatności ' }).click();
-
-
-  await page.getByRole('textbox', { name: 'BLIK Code' }).click();
-  await page.getByRole('textbox', { name: 'BLIK Code' }).fill('111111');
-  await page.getByRole('checkbox', { name: 'Przeczytałem/am i akceptuję' }).check();
-  await page.getByRole('button', { name: 'Kupuję i płacę' }).click();
-
-
-  await expect(page.getByRole('heading', { name: 'Zamówienie otrzymane' })).toBeVisible();
-
-
+  await page.getByRole('link', { name: 'Egipt - El Gouna Egipt – El' }).click();
+  await page.locator('#woocommerce_product_categories-3').getByRole('link', { name: 'Windsurfing' }).click();
+  await page.getByRole('link', { name: 'Wspinaczka' }).click();
+  await page.getByRole('link', { name: 'Yoga i pilates' }).click();
+  await page.getByRole('link', { name: 'Żeglarstwo' }).click();
+  await page.getByText('(6)').click();
+  await expect(page.getByRole('link', { name: 'Windsurfing' })).toBeVisible();
 });
 
 
 
 
 
+
+test('komentarz z aktualna godzina', async ({ page }, testInfo) => {
+
+  const comment = `test ${testInfo.project.name} ${new Date().toLocaleTimeString('pl-PL')}`;
+
+  const sklep = page.locator('#menu-item-198').getByRole('link', { name: 'Sklep' });
+  await sklep.waitFor({ state: 'visible' });
+  await sklep.click();
+
+  const kategoria = page.getByRole('link', { name: 'Przejdź do kategorii produktu Yoga i pilates' });
+  await kategoria.waitFor({ state: 'visible' });
+  await kategoria.click();
+
+  const produkt = page.getByRole('link', { name: 'Yoga w Japonii Wakacje z yog' });
+  await produkt.waitFor({ state: 'visible' });
+  await produkt.click();
+
+  const opinieTab = page.getByRole('tab', { name: 'Opinie (0)' });
+  await opinieTab.waitFor({ state: 'visible' });
+  await opinieTab.click();
+
+  const rating = page.getByRole('radio', { name: ' 5 z 5 gwiazdek' });
+  await rating.waitFor({ state: 'visible' });
+  await rating.click();
+
+  const textarea = page.getByRole('textbox', { name: 'Twoja opinia *' });
+  await textarea.waitFor({ state: 'visible' });
+  await textarea.fill(comment);
+
+  const button = page.getByRole('button', { name: 'Dodaj opinię' });
+  await button.waitFor({ state: 'visible' });
+  await button.click();
+
+  await expect(page.getByText(comment)).toBeVisible({ timeout: 15000 });
+});
