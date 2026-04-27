@@ -66,3 +66,4 @@ test('categories', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Windsurfing' })).toBeVisible();
 });
 
+
