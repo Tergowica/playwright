@@ -3,9 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
 
-  fullyParallel: false,  // tu jak bede chcial zmienic zeby bylo rownolegle
+  fullyParallel: true,  // tu jak bede chcial zmienic zeby bylo rownolegle
 
-  workers: 1,
+  // workers: 1,
  // workers: process.env.CI ? 1 : undefined,
 
   reporter: 'html',
