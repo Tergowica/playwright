@@ -167,7 +167,7 @@ test('raporty wgranie pliku', async ({ page }) => {
     await page.getByTestId('login-button').click();
     await page.getByRole('link', { name: 'raporty', exact: true }).click();
    // await page.locator('#my_file_1').click();
-    await page.locator('#my_file_1').setInputFiles('C:/testy/pliktestowy.txt');
+    await page.locator('#my_file_1').setInputFiles('tests/fixtures/pliktestowy.txt');
     await expect(page.getByText('pliktestowy.txt')).toBeVisible();
   });
 
