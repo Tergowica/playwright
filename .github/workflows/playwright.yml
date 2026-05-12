@@ -1,49 +1,86 @@
 name: Playwright Tests
 
 on:
+  # Uruchamia testy po pushu na każdy branch
   push:
-  #  branches: [ main, master ]
-  pull_request:
-  #  branches: [ main, master ]
 
-  # Pozwala odpalić workflow ręcznie z zakładki Actions na GitHubie.
-  # Możesz zostawić, przydaje się do testów.
+  # Uruchamia testy przy pull requestach
+  pull_request:
+
+  # Pozwala odpalić workflow ręcznie z GitHuba:
+  # GitHub → Actions → Playwright Tests → Run workflow
   workflow_dispatch:
 
 jobs:
   test:
     timeout-minutes: 60
+
+    # To jest maszyna GitHuba, na której startuje job.
+    # Nawet przy Dockerze GitHub najpierw daje runnera Ubuntu,
+    # a dopiero na nim uruchamia kontener.
     runs-on: ubuntu-latest
 
-    # DOCKER:
-    # Ten kontener ma już środowisko pod Playwrighta,
-    # czyli przeglądarki i zależności systemowe.
+    # WERSJA DOCKEROWA:
+    # Ten obraz zawiera gotowe środowisko Playwrighta:
+    # Linux + Node.js + przeglądarki + zależności systemowe.
+    #
+    # WAŻNE:
+    # Wersja obrazu powinna pasować do wersji @playwright/test z package.json / package-lock.json.
+    # U Ciebie z loga wyszło, że potrzebna jest wersja 1.58.2.
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
 
+    # FIX DLA FIREFOXA W DOCKERZE:
+    # Bez tego Firefox może próbować używać /github/home,
+    # które nie należy do aktualnego użytkownika w kontenerze.
+    # W logu Playwright sam podał obejście: HOME=/root.
+    env:
+      HOME: /root
+
     steps:
+    # Pobiera kod repozytorium do runnera/kontenera
     - uses: actions/checkout@v4
 
-    # NIEPOTRZEBNE W WERSJI DOCKEROWEJ:
-    # Obraz Playwrighta ma już Node.js.
-    # Jak będziesz chciał wrócić do wersji bez Dockera, odkomentuj.
+    # WERSJA BEZ DOCKERA:
+    # Tego używasz, gdy NIE masz sekcji "container".
+    # W Dockerze Playwrighta zwykle nie jest potrzebne,
+    # bo obraz ma już Node.js.
+    #
     # - uses: actions/setup-node@v4
     #   with:
     #     node-version: lts/*
 
+    # Instaluje zależności projektu z package-lock.json.
+    # To zostaje zarówno w wersji Dockerowej, jak i bez Dockera.
     - name: Install dependencies
       run: npm ci
 
-    # NIEPOTRZEBNE W WERSJI DOCKEROWEJ:
-    # Oficjalny obraz Playwrighta ma już przeglądarki i zależności systemowe.
-    # Jak będziesz chciał wrócić do wersji bez Dockera, odkomentuj.
+    # WERSJA BEZ DOCKERA:
+    # Tego używasz, gdy NIE masz sekcji "container".
+    # W Dockerze Playwrighta zwykle nie jest potrzebne,
+    # bo obraz ma już przeglądarki i zależności systemowe.
+    #
     # - name: Install Playwright Browsers
     #   run: npx playwright install --with-deps
 
+    # Pomocnicze sprawdzenie, czy HOME faktycznie jest /root.
+    # Jak już wszystko działa, możesz to zakomentować albo usunąć.
+    - name: Check HOME
+      run: echo $HOME
+
+    # Uruchamia wszystkie testy Playwrighta ze wszystkich projektów z playwright.config.ts
     - name: Run Playwright tests
       run: npx playwright test
 
-    - uses: actions/upload-artifact@v4
+    # Jeśli chcesz na chwilę sprawdzić tylko Chromium, użyj zamiast powyższego:
+    #
+    # - name: Run Playwright tests only on Chromium
+    #   run: npx playwright test --project=chromium
+
+    # Zapisuje raport Playwrighta jako artifact w GitHub Actions.
+    # Dzięki if: ${{ !cancelled() }} raport zapisze się także, gdy testy padną.
+    - name: Upload Playwright report
+      uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
